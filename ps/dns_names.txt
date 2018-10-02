@@ -1,0 +1,5 @@
+www.google.com
+www.rit.edu
+cs.rit.edu
+glados.cs.rit.edu
+www.taffenetwork.com
