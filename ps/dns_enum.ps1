@@ -18,7 +18,7 @@ function dns_enum([string]$file){
         Write-Host "Querying $line..."
 
         # Get the query then print each response
-        $response = Resolve-DnsName -Name $line
+        $response = Resolve-DnsName -Name $line -ErrorAction SilentlyContinue
         foreach($dns_reponse in $response){
             $ipaddr = $dns_reponse.IPAddress
             if($ipaddr){
