@@ -138,46 +138,36 @@ function ping_sweep([string]$ip_range){
 # Performs a port scan on the list of up hosts within the range supplied
 # Params:
 #    $up_hosts    - Array of hosts that are connected
-#    $port_range  - Range of ports to test
+#    $port_range  - Array of ports to test
 # Return:
 #    Nothing
 #
-function port_scan([Array]$up_hosts, [string]$port_range){
-
-    if($port_range -Match '-'){
-        
-        # Port range supplied so split it into start and end port
-        $ports = $port_range -Split '-'
-
-        # fill port array with range operator
-        $port_arr = @($ports[0]..$ports[1])
-    } else {
-
-        # otherwise just create the array
-        $port_arr = $ports -Split ','
-    }
+function port_scan([Array]$up_hosts, [Array]$port_range){
 
     # iterate over IPs in the supplied list of hosts that are up from
     # ping_sweep
     foreach($ip in $up_hosts){
 
-        $open_ports = @()
+        if($ip -ne $null -And ($ip.GetType().Name -contains "String")){
+            
+            Write-Host "$ip`:`t" -NoNewLine
 
-        #iterate over ports in the port array
-        foreach($port in $port_arr){
+            #iterate over ports in the port array
+            foreach($port in $port_arr){
 
-            # If we connect to that $ip/$port combo add port to the list
-            # of working ports
-            $socket = new-Object System.Net.Sockets.TcpClient($ip, $port)
-            if($socket.Connected){
-                $open_ports += $port
+                # If we connect to that $ip/$port combo add port to the list
+                # of working ports
+                try {
+                    $socket = new-Object System.Net.Sockets.TcpClient($ip, $port)
+                   if($socket.Connected){
+
+                        Write-Host "$port " -NoNewline
+                        $socket.Close()
+                    }
+                } catch {}
             }
-        }
 
-        # Alert user of what ports are open on the host
-        Write-Host "$ip`:\t" -NoNewLine
-        foreach($port in $open_ports){
-            Write-Host "$port, " -NoNewLine
+            Write-Host ""
         }
     }
 }
@@ -198,5 +188,21 @@ if(!$port_list){
     Write-Host "Port range supplied, performing port scan..."
     $up_ips = ping_sweep($ip_range)
 
-    port_scan($up_ips, $port_list)
+    if($port_list -Match '-'){
+        
+        # Port range supplied so split it into start and end port
+        $ports = $port_list -Split '-'
+
+        # fill port array with range operator
+        $port_arr = @($ports[0]..$ports[1])
+        port_scan($up_ips, $port_arr)
+
+    } else {
+
+        # Port range was supplied by comma-seperated list which 
+        # PS offers as a space-seperated list
+        $port_arr = $port_list -Split ' '
+        port_scan($up_ips, $port_range)
+
+    }
 }
