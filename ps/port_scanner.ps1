@@ -144,6 +144,29 @@ function ping_sweep([string]$ip_range){
 #
 function port_scan([Array]$up_hosts, [string]$port_range){
 
+    if($port_range -Match '-'){
+        
+        $ports = $port_range -Split '-'
+        $port_arr = @($ports[0]..$ports[1])
+    } else {
+        $port_arr = $ports -Split ','
+    }
+
+    foreach($ip in $up_hosts){
+
+        $open_ports = @()
+        foreach($port in $port_arr){
+            $socket = new-Object System.Net.Sockets.TcpClient($ip, $port)
+            if($socket.Connected){
+                $open_ports += $port
+            }
+        }
+
+        Write-Host "$ip`:\t" -NoNewLine
+        foreach($port in $open_ports){
+            Write-Host "$port, " -NoNewLine
+        }
+    }
 }
 
 if(!$ip_range){
