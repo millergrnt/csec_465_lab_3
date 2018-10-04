@@ -146,22 +146,35 @@ function port_scan([Array]$up_hosts, [string]$port_range){
 
     if($port_range -Match '-'){
         
+        # Port range supplied so split it into start and end port
         $ports = $port_range -Split '-'
+
+        # fill port array with range operator
         $port_arr = @($ports[0]..$ports[1])
     } else {
+
+        # otherwise just create the array
         $port_arr = $ports -Split ','
     }
 
+    # iterate over IPs in the supplied list of hosts that are up from
+    # ping_sweep
     foreach($ip in $up_hosts){
 
         $open_ports = @()
+
+        #iterate over ports in the port array
         foreach($port in $port_arr){
+
+            # If we connect to that $ip/$port combo add port to the list
+            # of working ports
             $socket = new-Object System.Net.Sockets.TcpClient($ip, $port)
             if($socket.Connected){
                 $open_ports += $port
             }
         }
 
+        # Alert user of what ports are open on the host
         Write-Host "$ip`:\t" -NoNewLine
         foreach($port in $open_ports){
             Write-Host "$port, " -NoNewLine
@@ -169,16 +182,18 @@ function port_scan([Array]$up_hosts, [string]$port_range){
     }
 }
 
+# We need an ip_range no matter what
 if(!$ip_range){
     Write-Host "Error: Please supply IP Range"
     return
 }
 
+# No port list means we only need to do the ping sweep
 if(!$port_list){
     Write-Host "Only IP Range supplied, performing ping sweep..."
     $up_ips = ping_sweep($ip_range)
 
-    $up_ips
+# Otherwise perform the port scan after the ping sweep
 } else {
     Write-Host "Port range supplied, performing port scan..."
     $up_ips = ping_sweep($ip_range)
