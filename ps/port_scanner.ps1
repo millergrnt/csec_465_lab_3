@@ -183,5 +183,5 @@ if(!$port_list){
     Write-Host "Port range supplied, performing port scan..."
     $up_ips = ping_sweep($ip_range)
 
-
+    port_scan($up_ips, $port_list)
 }
