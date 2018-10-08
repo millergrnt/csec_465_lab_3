@@ -1,7 +1,13 @@
+#
+# File:        os_detection.py
+# Author:      Franco Graziano <fg8643@rit.edu>
+# Description: iterates through a file of IP addresses to detect the OS.
+#              Only uses pings as of now.
+#
+#              usage: "python3 os_detection.py filename.txt"
+#
+
 from multiprocessing.dummy import Pool
-
-import scapy
-
 from scapy.all import *
 from scapy.layers.inet import IP, ICMP
 import sys
