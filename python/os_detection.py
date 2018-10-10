@@ -13,8 +13,6 @@ from scapy.layers.inet import IP, ICMP
 import sys
 
 
-
-
 def send_ping(ip):
     packet = IP(dst=str(ip), ttl=20) / ICMP()
     # print(str(ip))
@@ -23,9 +21,10 @@ def send_ping(ip):
         # print("no response")
         return
     if IP in ply:
-        if ply.getlayer(IP).ttl <= 64:
+        # print(ply.getlayer(IP).ttl)
+        if ply.getlayer(IP).ttl <= 64 and ply.getlayer(IP).ttl >32:
             operating_system = "Linux"
-        if ply.getlayer(IP).ttl > 64:
+        if ply.getlayer(IP).ttl > 64 or ply.getlayer(IP).ttl == 32:
             operating_system = "Windows"
     print(ip + "   " +operating_system)
 
@@ -43,10 +42,6 @@ def main(file):
     threadedFunc = pool.map(send_ping, lst)
     pool.close()
     pool.join()
-
-
-
-
 
 
 
