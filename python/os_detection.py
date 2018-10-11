@@ -24,9 +24,11 @@ def send_ping(ip):
         # print(ply.getlayer(IP).ttl)
         if ply.getlayer(IP).ttl <= 64 and ply.getlayer(IP).ttl >32:
             operating_system = "Linux"
+            print(ip + "   " + operating_system)
+
         if ply.getlayer(IP).ttl > 64 or ply.getlayer(IP).ttl == 32:
             operating_system = "Windows"
-    print(ip + "   " +operating_system)
+            print(ip + "   " +operating_system)
 
 
 
@@ -38,11 +40,15 @@ def main(file):
     for line in fp:
         lst.append(line.strip())
 
-    pool = Pool(2)
-    threadedFunc = pool.map(send_ping, lst)
-    pool.close()
-    pool.join()
 
+    if len(lst) >1:
+        pool = Pool(2)
+        threadedFunc = pool.map(send_ping, lst)
+        pool.close()
+        pool.join()
+
+    if len(lst)==1:
+        send_ping(lst[0])
 
 
 
