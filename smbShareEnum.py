@@ -29,8 +29,7 @@ def main(argv):
     with open(args.filename) as f:
 
         # Open file with system names
-        for system_name in f:
-            # Loop through file
+        for system_name in f:# Loop through file
             print('Enumerating over system: ' + system_name)
             conn = SMBConnection(args.username, args.password, 'enumerator', system_name, args.domain,
             use_ntlm_v2=True, sign_options=SMBConnection.SIGN_WHEN_SUPPORTED, is_direct_tcp=False)
